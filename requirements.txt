@@ -1,0 +1,10 @@
+streamlit
+langchain
+langchain-openai
+beautifulsoup4
+python-dotenv
+requests
+langgraph
+snowflake-connector-python
+boto3
+streamlit_authenticator
