@@ -51,9 +51,72 @@ st.markdown("### Your AI-Powered Guide to Confluence Documentation")
 
 # Introduction
 st.markdown("""
-Welcome to the Confluence Documentation Assistant! This powerful tool helps teams navigate and understand their 
-Confluence documentation through natural language conversations and smart organization.
+Welcome to the Confluence Documentation Assistant! I'm your AI guide to exploring and understanding your team's documentation. 
+Think of me as your knowledgeable colleague who's read through all your Confluence pages and is ready to help you find exactly what you need.
+
+I can help you with:
+- Finding specific information across your documentation
+- Understanding complex topics and processes
+- Navigating between related pages and concepts
+- Organizing your documentation in a way that makes sense
 """)
+
+# Content Overview Section
+st.header("📚 What Can I Help You With?")
+st.markdown("""
+Once you set me up with your documentation schema, I can assist you with any content you add! Here's how it works:
+
+1. **Browse Your Spaces**: Use the Page Search tool to explore all your Confluence spaces and pages
+2. **Build Your Knowledge Base**: Add relevant pages to categories like:
+   - Product Documentation
+   - Process Guidelines
+   - Team Resources
+   - Technical Specs
+   - And any other categories that make sense for your team!
+3. **Ask Away**: Once your pages are added, ask me anything about them - I'll help you find and understand the information
+
+The more documentation you add to your schema, the more helpful I can be! I'll always reference the specific pages where I find information, so you can easily verify and learn more.
+""")
+
+# Dynamic Content Section
+st.header("🎯 Getting Value Right Away")
+st.markdown("""
+Here are some examples of what you can ask me:
+- "What's our process for X?"
+- "Can you explain how Y works?"
+- "Where can I find information about Z?"
+- "What are the steps for doing A?"
+- "Who should I contact about B?"
+
+I'll always:
+- Tell you which pages I'm referencing
+- Provide direct links to source material
+- Let you know if I'm not sure about something
+- Help you find related information
+""")
+
+# Current Documentation Section
+st.header("📖 Your Current Documentation")
+
+if 'schema_config' in st.session_state and st.session_state.schema_config:
+    st.success(f"🎉 You have {len(st.session_state.schema_config)} categories set up!")
+    
+    for category, pages in st.session_state.schema_config.items():
+        with st.expander(f"📚 {category} ({len(pages)} pages)", expanded=False):
+            for page in pages:
+                st.markdown(f"""
+                - **{page['title']}**
+                  {page.get('description', '_No description provided_')}
+                """)
+else:
+    st.info("""
+    🔍 No documentation schema found yet! 
+    
+    Head over to the Page Search tool to start building your knowledge base. Once you add some pages, 
+    I'll be able to help you find and understand your documentation more effectively.
+    
+    Need help getting started? Click the "Go to Page Search" button in the sidebar!
+    """)
 
 # Key Features Section
 st.header("🌟 Key Features")
