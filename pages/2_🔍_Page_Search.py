@@ -18,10 +18,51 @@ st.set_page_config(
     layout="wide"
 )
 
+# Initialize session state for API configuration
+if "confluence_api_token" not in st.session_state:
+    st.session_state.confluence_api_token = ""
+if "confluence_email" not in st.session_state:
+    st.session_state.confluence_email = ""
+
+# Sidebar API Configuration
+with st.sidebar:
+    st.divider()
+    st.markdown("### 🔑 API Configuration")
+    
+    # Confluence API configuration
+    confluence_email = st.text_input(
+        "Confluence Email",
+        value=st.session_state.confluence_email,
+        help="Enter your Confluence account email",
+        key="confluence_email_input"
+    )
+    
+    confluence_token = st.text_input(
+        "Confluence API Token",
+        type="password",
+        value=st.session_state.confluence_api_token,
+        help="Enter your Confluence API token. Generate one in your Confluence settings.",
+        key="confluence_token_input"
+    )
+    
+    if st.button("Save API Configuration", type="primary"):
+        if confluence_email and confluence_token:
+            st.session_state.confluence_email = confluence_email
+            st.session_state.confluence_api_token = confluence_token
+            st.success("✅ API configuration saved!")
+            st.rerun()
+        else:
+            st.error("Please fill in all API configuration fields")
+
+# Check for required API configuration
+if not st.session_state.confluence_api_token or not st.session_state.confluence_email:
+    st.error("⚠️ Please configure your Confluence API credentials in the sidebar")
+    st.stop()
+
 # Confluence API configuration
 BASE_URL = "https://justworks.atlassian.net/wiki/api/v2"
-EMAIL = "wvansickle@justworks.com"
-API_TOKEN = os.getenv("CONFLUENCE_API_TOKEN")
+EMAIL = st.session_state.confluence_email
+API_TOKEN = st.session_state.confluence_api_token
 auth_header = {"Authorization": "Basic " + base64.b64encode(f"{EMAIL}:{API_TOKEN}".encode()).decode()}
 
 # Initialize session state
@@ -77,6 +118,17 @@ def get_spaces() -> List[Dict]:
         }
         
         response = requests.get(f"{BASE_URL}/spaces", headers=auth_header, params=params)
+        
+        if response.status_code == 401:
+            st.error("Authentication failed. Please check your Confluence email and API token.")
+            return []
+        elif response.status_code == 403:
+            st.error("Access denied. Please check your Confluence permissions.")
+            return []
+        elif response.status_code == 404:
+            st.error("API endpoint not found. Please check your Confluence instance URL.")
+            return []
+            
         response.raise_for_status()
         
         result = response.json()
@@ -85,6 +137,9 @@ def get_spaces() -> List[Dict]:
         # Sort spaces by name for better UX
         sorted_spaces = sorted(spaces, key=lambda x: x["name"].lower())
         return sorted_spaces
+    except requests.exceptions.ConnectionError:
+        st.error("Failed to connect to Confluence. Please check your internet connection.")
+        return []
     except Exception as e:
         logger.error(f"Error fetching spaces: {str(e)}")
         st.error(f"Error loading spaces: {str(e)}")
@@ -104,8 +159,22 @@ def get_space_pages(space_id: Optional[str] = None) -> List[Dict]:
             params["space-id"] = [space_id]
         
         response = requests.get(f"{BASE_URL}/pages", headers=auth_header, params=params)
+        
+        if response.status_code == 401:
+            st.error("Authentication failed. Please check your Confluence email and API token.")
+            return []
+        elif response.status_code == 403:
+            st.error("Access denied. Please check your Confluence permissions.")
+            return []
+        elif response.status_code == 404:
+            st.error("API endpoint not found. Please check your Confluence instance URL.")
+            return []
+            
         response.raise_for_status()
         return response.json().get("results", [])
+    except requests.exceptions.ConnectionError:
+        st.error("Failed to connect to Confluence. Please check your internet connection.")
+        return []
     except Exception as e:
         st.error(f"API Error: {str(e)}")
         return []
@@ -114,8 +183,22 @@ def get_page_details(page_id: str) -> Optional[Dict]:
     """Get detailed information about a specific page."""
     try:
         response = requests.get(f"{BASE_URL}/pages/{page_id}", headers=auth_header)
+        
+        if response.status_code == 401:
+            st.error("Authentication failed. Please check your Confluence email and API token.")
+            return None
+        elif response.status_code == 403:
+            st.error("Access denied. Please check your Confluence permissions.")
+            return None
+        elif response.status_code == 404:
+            st.error("Page not found. It may have been deleted or moved.")
+            return None
+            
         response.raise_for_status()
         return response.json()
+    except requests.exceptions.ConnectionError:
+        st.error("Failed to connect to Confluence. Please check your internet connection.")
+        return None
     except Exception as e:
         logger.error(f"Error getting page details: {str(e)}")
         return None
