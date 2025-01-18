@@ -137,7 +137,7 @@ with col1:
     
     <div class="feature-card">
         <h3>🤖 AI-Powered</h3>
-        <p>Powered by GPT-4 for intelligent understanding and natural conversations about your documentation.</p>
+        <p>Powered by GPT-4o for intelligent understanding and natural conversations about your documentation.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -221,7 +221,7 @@ The Confluence Documentation Assistant combines several powerful technologies:
    - Secure API communication
 
 2. **AI Processing**
-   - GPT-4 for natural language understanding
+   - GPT-4o for natural language understanding
    - Context-aware responses
    - Smart document categorization
 
@@ -272,7 +272,7 @@ with col2:
     **Backend**
     - Python
     - LangChain
-    - OpenAI GPT-4
+    - OpenAI GPT-4o
     """)
 
 with col3:
@@ -306,4 +306,16 @@ with st.sidebar:
     if st.button("🔍 Go to Page Search", use_container_width=True):
         st.switch_page("pages/2_🔍_Page_Search.py")
     if st.button("💬 Open Chat Assistant", use_container_width=True):
-        st.switch_page("pages/1_💬_Chat_Assistant.py") 
+        st.switch_page("pages/1_💬_Chat_Assistant.py")
+    
+    st.divider()
+    st.markdown("### 👨‍💻 Created By")
+    st.markdown("""
+    <div style="text-align: center">
+        <p>Built by <a href="https://www.v3-ai.com" target="_blank">Will VanSickle</a></p>
+        <p style="font-size: 0.9em; color: #666;">
+            Founder of <a href="https://www.v3-ai.com" target="_blank">V3 AI</a><br>
+            Building the future of AI-powered tools
+        </p>
+    </div>
+    """, unsafe_allow_html=True) 
