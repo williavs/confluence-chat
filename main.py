@@ -312,10 +312,14 @@ with st.sidebar:
     st.markdown("### 👨‍💻 Created By")
     st.markdown("""
     <div style="text-align: center">
-        <p>Built by <a href="https://www.v3-ai.com" target="_blank">Will VanSickle</a></p>
+        <p>Built by <a href="https://www.v3-ai.com" target="_blank">Willy VanSickle</a></p>
         <p style="font-size: 0.9em; color: #666;">
             Founder of <a href="https://www.v3-ai.com" target="_blank">V3 AI</a><br>
-            Building the future of AI-powered tools
+            Building practical AI solutions for businesses
+        </p>
+        <p style="font-size: 0.9em; margin-top: 10px; background-color: #f8f9fa; padding: 10px; border-radius: 5px;">
+            💼 Need a custom AI solution for your organization?<br>
+            <a href="https://www.v3-ai.com" target="_blank">Contact me</a> to discuss your business needs!
         </p>
     </div>
     """, unsafe_allow_html=True) 
