@@ -49,35 +49,25 @@ inject_custom_css()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize session state for API keys if not present
-if "openai_api_key" not in st.session_state:
-    st.session_state.openai_api_key = ""
+# Initialize session state for API configuration
 if "confluence_api_token" not in st.session_state:
     st.session_state.confluence_api_token = ""
 if "confluence_email" not in st.session_state:
     st.session_state.confluence_email = ""
+if "confluence_url" not in st.session_state:
+    st.session_state.confluence_url = ""
 
-# Sidebar API key management
+# Sidebar API Configuration
 with st.sidebar:
     st.divider()
     st.markdown("### 🔑 API Configuration")
     
-    # OpenAI API key input
-    openai_key = st.text_input(
-        "OpenAI API Key",
-        type="password",
-        value=st.session_state.openai_api_key,
-        help="Enter your OpenAI API key. Get one at https://platform.openai.com/api-keys",
-        key="openai_key_input"
-    )
-    
     # Confluence API configuration
-    confluence_token = st.text_input(
-        "Confluence API Token",
-        type="password",
-        value=st.session_state.confluence_api_token,
-        help="Enter your Confluence API token. Generate one in your Confluence settings.",
-        key="confluence_token_input"
+    confluence_url = st.text_input(
+        "Confluence URL",
+        value=st.session_state.confluence_url,
+        help="Enter your Confluence instance URL (e.g., https://your-company.atlassian.net/wiki)",
+        key="confluence_url_input"
     )
     
     confluence_email = st.text_input(
@@ -87,34 +77,36 @@ with st.sidebar:
         key="confluence_email_input"
     )
     
+    confluence_token = st.text_input(
+        "Confluence API Token",
+        type="password",
+        value=st.session_state.confluence_api_token,
+        help="Enter your Confluence API token. Generate one in your Confluence settings.",
+        key="confluence_token_input"
+    )
+    
     if st.button("Save API Configuration", type="primary"):
-        if openai_key and confluence_token and confluence_email:
-            st.session_state.openai_api_key = openai_key
-            st.session_state.confluence_api_token = confluence_token
+        if confluence_email and confluence_token and confluence_url:
             st.session_state.confluence_email = confluence_email
-            os.environ["OPENAI_API_KEY"] = openai_key
+            st.session_state.confluence_api_token = confluence_token
+            st.session_state.confluence_url = confluence_url.rstrip('/')
             st.success("✅ API configuration saved!")
             st.rerun()
         else:
             st.error("Please fill in all API configuration fields")
 
-# Check for required API keys
-if not st.session_state.openai_api_key or not st.session_state.confluence_api_token or not st.session_state.confluence_email:
-    st.error("⚠️ Please configure your API keys in the sidebar")
+# Check for required API configuration
+if not (st.session_state.confluence_api_token and 
+        st.session_state.confluence_email and 
+        st.session_state.confluence_url):
+    st.error("⚠️ Please configure your Confluence API credentials in the sidebar")
     st.stop()
 
-# Set OpenAI API key for LangChain
-os.environ["OPENAI_API_KEY"] = st.session_state.openai_api_key
-
 # Confluence API configuration
-BASE_URL = "https://justworks.atlassian.net/wiki/api/v2"
+BASE_URL = f"{st.session_state.confluence_url}/api/v2"
+CONFLUENCE_BASE_URL = f"{st.session_state.confluence_url}/spaces"
 EMAIL = st.session_state.confluence_email
 API_TOKEN = st.session_state.confluence_api_token
-auth_header = {"Authorization": "Basic " + base64.b64encode(f"{EMAIL}:{API_TOKEN}".encode()).decode()}
-
-# Define the specific pages
-CONFLUENCE_SPACE = "~524722389"  # Personal space ID
-CONFLUENCE_BASE_URL = "https://justworks.atlassian.net/wiki/spaces"
 
 # Documentation structure - This will be populated from schema_config
 PAGES = {}
