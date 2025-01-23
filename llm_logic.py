@@ -24,7 +24,7 @@ def clean_html_content(html_content: str) -> str:
 class LLMHandler:
     def __init__(self, get_documentation_content):
         self.llm = ChatOpenAI(
-            model_name="gpt-4", 
+            model_name="gpt-4o", 
             temperature=0
         )
         self.get_documentation_content = get_documentation_content
